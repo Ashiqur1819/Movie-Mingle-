@@ -67,11 +67,26 @@ async function run() {
         res.send(result);
       });
 
+          app.get("/favourites/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id:  id};
+            const result = await favouriteCollection.findOne(query);
+            console.log(result);
+            res.send(result);
+          });
+
     app.post("/favourites", async (req, res) => {
       const favouriteMovie = req.body;
       const result = await favouriteCollection.insertOne(favouriteMovie);
       res.send(result);
     });
+
+        app.delete("/favourites/:id", async (req, res) => {
+          const id = req.params.id;
+          const query = { _id: id };
+          const result = await favouriteCollection.deleteOne(query);
+          res.send(result);
+        });
 
 
 
