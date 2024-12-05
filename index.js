@@ -28,7 +28,9 @@ async function run() {
     
     const database = client.db("MoviesDB");
     const movieCollection = database.collection("movies");
+    const favouriteCollection = database.collection("favourites");
 
+// API's for all movies
     app.get("/movies", async (req, res) => {
       const cursor = movieCollection.find();
       const result = await cursor.toArray();
@@ -44,8 +46,8 @@ async function run() {
 
 
     app.post("/movies", async (req, res) => {
-      const newData = req.body;
-      const result = await movieCollection.insertOne(newData);
+      const newMovie = req.body;
+      const result = await movieCollection.insertOne(newMovie);
       res.send(result);
     });
 
@@ -53,6 +55,21 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await movieCollection.deleteOne(query);
+      res.send(result);
+    });
+
+
+    // API's for favourite movies
+
+      app.get("/favourites", async (req, res) => {
+        const cursor = favouriteCollection.find();
+        const result = await cursor.toArray();
+        res.send(result);
+      });
+
+    app.post("/favourites", async (req, res) => {
+      const favouriteMovie = req.body;
+      const result = await favouriteCollection.insertOne(favouriteMovie);
       res.send(result);
     });
 
