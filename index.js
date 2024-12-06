@@ -72,7 +72,6 @@ async function run() {
             const id = req.params.id;
             const query = { _id:  id};
             const result = await favouriteCollection.findOne(query);
-            console.log(result);
             res.send(result);
           });
 
@@ -99,6 +98,29 @@ async function run() {
             app.post("/users", async (req, res) => {
               const user = req.body;
               const result = await userCollection.insertOne(user);
+              res.send(result);
+            });
+
+            app.get("/users/:id", async (req, res) => {
+              const id = req.params.id;
+              const query = { _id: new ObjectId(id) };
+              const result = await userCollection.findOne(query);
+              res.send(result);
+            });
+
+            app.patch("/users", async (req, res) => {
+              const email = req.body.email;
+              const filter = { email };
+              const updatedUser = {
+                $set: {
+                  lastSignInTime: req.body?.lastSignInTime,
+                },
+              };
+
+              const result = await userCollection.updateOne(
+                filter,
+                updatedUser
+              );
               res.send(result);
             });
 
