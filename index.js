@@ -29,6 +29,7 @@ async function run() {
     const database = client.db("MoviesDB");
     const movieCollection = database.collection("movies");
     const favouriteCollection = database.collection("favourites");
+    const userCollection = database.collection("users")
 
 // API's for all movies
     app.get("/movies", async (req, res) => {
@@ -87,6 +88,19 @@ async function run() {
           const result = await favouriteCollection.deleteOne(query);
           res.send(result);
         });
+
+      // API's for users
+        app.get("/users", async (req, res) => {
+          const cursor = userCollection.find();
+          const result = await cursor.toArray();
+          res.send(result);
+        });
+
+            app.post("/users", async (req, res) => {
+              const user = req.body;
+              const result = await userCollection.insertOne(user);
+              res.send(result);
+            });
 
 
 
