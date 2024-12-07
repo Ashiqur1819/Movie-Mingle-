@@ -50,6 +50,30 @@ async function run() {
       res.send(result);
     });
 
+    app.put("/movies/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const movie = req.body;
+      const updatedMovie = {
+        $set: {
+          poster: movie.poster,
+          title: movie.title,
+          genre: movie.genre,
+          duration: movie.duration,
+          year: movie.year,
+          rating: movie.rating,
+          summery: movie.summery,
+        },
+      };
+      const result = await movieCollection.updateOne(
+        filter,
+        updatedMovie,
+        options
+      );
+      res.send(result);
+    });
+
     app.delete("/movies/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
