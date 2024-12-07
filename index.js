@@ -1,14 +1,13 @@
-const express = require('express');
-const app = express()
+const express = require("express");
+const app = express();
 const port = process.env.PORT || 3000;
-const cors = require('cors');
+const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 
 // Middleware
 app.use(cors());
-app.use(express.json())
-
+app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.USER_PASS}@cluster0.zt90y.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -23,13 +22,18 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-
     const database = client.db("MoviesDB");
     const movieCollection = database.collection("movies");
     const favouriteCollection = database.collection("favourites");
-    const userCollection = database.collection("users")
+    const userCollection = database.collection("users");
 
-// API's for all movies
+    // API's for all movies
+    app.get("/", async(req, res) => {
+      const cursor = movieCollection.find({});
+      const result = await cursor.limit(6).toArray()
+      res.send(result)
+    })
+
     app.get("/movies", async (req, res) => {
       const cursor = movieCollection.find();
       const result = await cursor.toArray();
@@ -42,7 +46,6 @@ async function run() {
       const result = await movieCollection.findOne(query);
       res.send(result);
     });
-
 
     app.post("/movies", async (req, res) => {
       const newMovie = req.body;
@@ -81,21 +84,20 @@ async function run() {
       res.send(result);
     });
 
-
     // API's for favourite movies
 
-      app.get("/favourites", async (req, res) => {
-        const cursor = favouriteCollection.find();
-        const result = await cursor.toArray();
-        res.send(result);
-      });
+    app.get("/favourites", async (req, res) => {
+      const cursor = favouriteCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
-          app.get("/favourites/:id", async (req, res) => {
-            const id = req.params.id;
-            const query = { _id:  id};
-            const result = await favouriteCollection.findOne(query);
-            res.send(result);
-          });
+    app.get("/favourites/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: id };
+      const result = await favouriteCollection.findOne(query);
+      res.send(result);
+    });
 
     app.post("/favourites", async (req, res) => {
       const favouriteMovie = req.body;
@@ -103,61 +105,54 @@ async function run() {
       res.send(result);
     });
 
-        app.delete("/favourites/:id", async (req, res) => {
-          const id = req.params.id;
-          const query = { _id: id };
-          const result = await favouriteCollection.deleteOne(query);
-          res.send(result);
-        });
+    app.delete("/favourites/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: id };
+      const result = await favouriteCollection.deleteOne(query);
+      res.send(result);
+    });
 
-      // API's for users
-        app.get("/users", async (req, res) => {
-          const cursor = userCollection.find();
-          const result = await cursor.toArray();
-          res.send(result);
-        });
+    // API's for users
+    app.get("/users", async (req, res) => {
+      const cursor = userCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
-            app.post("/users", async (req, res) => {
-              const user = req.body;
-              const result = await userCollection.insertOne(user);
-              res.send(result);
-            });
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
 
-            app.get("/users/:id", async (req, res) => {
-              const id = req.params.id;
-              const query = { _id: new ObjectId(id) };
-              const result = await userCollection.findOne(query);
-              res.send(result);
-            });
+    app.get("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await userCollection.findOne(query);
+      res.send(result);
+    });
 
-            app.patch("/users", async (req, res) => {
-              const email = req.body.email;
-              const filter = { email };
-              const updatedUser = {
-                $set: {
-                  lastSignInTime: req.body?.lastSignInTime,
-                },
-              };
+    app.patch("/users", async (req, res) => {
+      const email = req.body.email;
+      const filter = { email };
+      const updatedUser = {
+        $set: {
+          lastSignInTime: req.body?.lastSignInTime,
+        },
+      };
 
-              const result = await userCollection.updateOne(
-                filter,
-                updatedUser
-              );
-              res.send(result);
-            });
-
+      const result = await userCollection.updateOne(filter, updatedUser);
+      res.send(result);
+    });
   } finally {
-
   }
 }
 run().catch(console.dir);
 
-
-
 app.get("/", (req, res) => {
-    res.send("Movies server running successfully");
-})
+  res.send("Movies server running successfully");
+});
 
 app.listen(port, () => {
-    console.log("This server running on port:", port)
-})
+  console.log("This server running on port:", port);
+});
