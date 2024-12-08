@@ -26,13 +26,14 @@ async function run() {
     const movieCollection = database.collection("movies");
     const favouriteCollection = database.collection("favourites");
     const userCollection = database.collection("users");
+    const contactCollection = database.collection("contactUsers");
 
     // API's for all movies
-    app.get("/", async (req, res) => {
-      const cursor = movieCollection.find({});
-      const result = await cursor.limit(6).toArray();
-      res.send(result);
-    });
+    // app.get("/", async (req, res) => {
+    //   const cursor = movieCollection.find({});
+    //   const result = await cursor.limit(6).toArray();
+    //   res.send(result);
+    // });
 
     app.get("/movies", async (req, res) => {
       const cursor = movieCollection.find();
@@ -142,6 +143,19 @@ async function run() {
       };
 
       const result = await userCollection.updateOne(filter, updatedUser);
+      res.send(result);
+    });
+
+    // API's for contact users
+    app.get("/contact_users", async (req, res) => {
+      const cursor = contactCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.post("/contact_users", async (req, res) => {
+      const user = req.body;
+      const result = await contactCollection.insertOne(user);
       res.send(result);
     });
   } finally {
