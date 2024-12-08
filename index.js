@@ -28,11 +28,11 @@ async function run() {
     const userCollection = database.collection("users");
 
     // API's for all movies
-    app.get("/", async(req, res) => {
+    app.get("/", async (req, res) => {
       const cursor = movieCollection.find({});
-      const result = await cursor.limit(6).toArray()
-      res.send(result)
-    })
+      const result = await cursor.limit(6).toArray();
+      res.send(result);
+    });
 
     app.get("/movies", async (req, res) => {
       const cursor = movieCollection.find();
@@ -94,7 +94,7 @@ async function run() {
 
     app.get("/favourites/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id: id };
+      const query = { _id: new ObjectId(id) };
       const result = await favouriteCollection.findOne(query);
       res.send(result);
     });
@@ -107,7 +107,7 @@ async function run() {
 
     app.delete("/favourites/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id: id };
+      const query = { _id: new ObjectId(id) };
       const result = await favouriteCollection.deleteOne(query);
       res.send(result);
     });
