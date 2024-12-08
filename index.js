@@ -11,7 +11,6 @@ app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.USER_PASS}@cluster0.zt90y.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -27,13 +26,6 @@ async function run() {
     const favouriteCollection = database.collection("favourites");
     const userCollection = database.collection("users");
     const contactCollection = database.collection("contactUsers");
-
-    // API's for all movies
-    // app.get("/", async (req, res) => {
-    //   const cursor = movieCollection.find({});
-    //   const result = await cursor.limit(6).toArray();
-    //   res.send(result);
-    // });
 
     app.get("/movies", async (req, res) => {
       const cursor = movieCollection.find();
@@ -161,12 +153,10 @@ async function run() {
   } finally {
   }
 }
-run().catch(console.dir);
+run();
 
 app.get("/", (req, res) => {
   res.send("Movies server running successfully");
 });
 
-app.listen(port, () => {
-  console.log("This server running on port:", port);
-});
+app.listen(port);
